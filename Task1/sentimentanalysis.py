@@ -1,6 +1,7 @@
 import pandas as pd
 import nltk
 import sklearn
+import re
 from nltk.stem import   PorterStemmer
 from nltk.tokenize import sent_tokenize
 from nltk.tokenize import word_tokenize
@@ -16,10 +17,6 @@ print(df.head())
 print(df['sentiment'].value_counts())   # should be ~25000/25000 positive/negative
 print(df.isnull().sum())    
 
-import re
-from nltk.corpus import stopwords
-from nltk.tokenize import word_tokenize
-from nltk.stem import WordNetLemmatizer
 
 stop_words = set(stopwords.words("english"))
 lemmatizer = WordNetLemmatizer()
@@ -42,20 +39,42 @@ def preprocess_text(text):
 # Apply to the whole column 
 df['cleaned_review'] = df['review'].apply(preprocess_text)
 
-# Sanity check — compare before/after on one row
-print(df['review'].iloc[0][:300])
-print(df['cleaned_review'].iloc[0][:300])   
-
-df['cleaned_review'] = df['review'].apply(preprocess_text)
-
+# Sanity check
 # Compare before/after on a few rows
 for i in range(3):
     print("ORIGINAL:", df['review'].iloc[i][:200])
     print("CLEANED:", df['cleaned_review'].iloc[i][:200])
-    print("---")         # should be 0 for both columns
-
-
+    print("---")         
 print(df['cleaned_review'].isnull().sum())
 
 
-#TF-IDF (Term Frequency–Inverse Document Frequency)
+#TF-IDF
+Vectorizer = TfidfVectorizer(max_features=5000)
+
+#train test split
+X_train, X_test, y_train, y_test = train_test_split(
+    df['cleaned_review'],
+    df['sentiment'],
+    test_size=0.2,
+    random_state=42
+)
+
+X_train_vec = vectorizer.fit_transform(X_train)
+X_test_vec = vectorizer.transform(X_test)
+
+
+# Sanity checks after vectorization
+
+#Check the shape of vectorized matrices
+print("X_train_vec shape:", X_train_vec.shape)
+print("X_test_vec shape:", X_test_vec.shape)
+
+# 2. Check the shape/length of your labels matches
+print("y_train length:", len(y_train))
+print("y_test length:", len(y_test))
+
+# 3. Peek at the actual vocabulary the vectorizer learned
+print("Sample vocabulary words:", list(vectorizer.vocabulary_.keys())[:20])
+
+# 4. Confirm vocabulary size matches your max_features setting
+print("Vocabulary size:", len(vectorizer.vocabulary_))
