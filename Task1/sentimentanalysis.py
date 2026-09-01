@@ -2,6 +2,7 @@ import pandas as pd
 import nltk
 import sklearn
 import re
+from sklearn.linear_model import LogisticRegression
 from nltk.stem import   PorterStemmer
 from nltk.tokenize import sent_tokenize
 from nltk.tokenize import word_tokenize
@@ -59,8 +60,8 @@ X_train, X_test, y_train, y_test = train_test_split(
     random_state=42
 )
 
-X_train_vec = vectorizer.fit_transform(X_train)
-X_test_vec = vectorizer.transform(X_test)
+X_train_vec = Vectorizer.fit_transform(X_train)
+X_test_vec = Vectorizer.transform(X_test)
 
 
 # Sanity checks after vectorization
@@ -74,7 +75,20 @@ print("y_train length:", len(y_train))
 print("y_test length:", len(y_test))
 
 # 3. Peek at the actual vocabulary the vectorizer learned
-print("Sample vocabulary words:", list(vectorizer.vocabulary_.keys())[:20])
+print("Sample vocabulary words:", list(Vectorizer.vocabulary_.keys())[:20])
 
 # 4. Confirm vocabulary size matches your max_features setting
-print("Vocabulary size:", len(vectorizer.vocabulary_))
+print("Vocabulary size:", len(Vectorizer.vocabulary_))
+
+
+#the model
+from sklearn.linear_model import LogisticRegression
+
+# 1. Create the model
+model = LogisticRegression(max_iter = 1000)
+
+# 2. Train it on your vectorized training data
+model.fit(X_train_vec, y_train)
+
+# 3. Use it to predict on the test data
+y_pred = model.predict(X_test_vec)
