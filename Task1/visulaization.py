@@ -16,12 +16,6 @@ import numpy as np
 
 df = pd.read_csv(r"IMDBDataset.csv")
 
-print(df.shape)          
-print(df.head())
-print(df['sentiment'].value_counts())   # should be ~25000/25000 positive/negative
-print(df.isnull().sum())    
-
-
 stop_words = set(stopwords.words("english"))
 lemmatizer = WordNetLemmatizer()
 
@@ -66,25 +60,6 @@ X_train, X_test, y_train, y_test = train_test_split(
 X_train_vec = Vectorizer.fit_transform(X_train)
 X_test_vec = Vectorizer.transform(X_test)
 
-
-# Sanity checks after vectorization
-
-#Check the shape of vectorized matrices
-print("X_train_vec shape:", X_train_vec.shape)
-print("X_test_vec shape:", X_test_vec.shape)
-
-# 2. Check the shape/length of your labels matches
-print("y_train length:", len(y_train))
-print("y_test length:", len(y_test))
-
-# 3. Peek at the actual vocabulary the vectorizer learned
-print("Sample vocabulary words:", list(Vectorizer.vocabulary_.keys())[:20])
-
-# 4. Confirm vocabulary size matches your max_features setting
-print("Vocabulary size:", len(Vectorizer.vocabulary_))
-
-
-#the model
 from sklearn.linear_model import LogisticRegression
 
 # 1. Create the model
@@ -96,13 +71,38 @@ model.fit(X_train_vec, y_train)
 # 3. Use it to predict on the test data
 y_pred = model.predict(X_test_vec)
 
-#Evaluation 
-# 1. Calculate overall accuracy
-accuracyscore = accuracy_score(y_test, y_pred)
-print(accuracyscore)
 
-classifi_report = classification_report(y_test, y_pred)
-print(classifi_report)
+#Visulization
+words = Vectorizer.get_feature_names_out()
+weights = model.coef_[0]
 
-confuse_matrix = confusion_matrix(y_test, y_pred)
-print(confuse_matrix)
+paired = list(zip(words, weights))
+
+sorted_pairs = sorted(paired, key=lambda x: x[1])
+most_negative = sorted_pairs[:15]    
+most_positive = sorted_pairs[-15:]    
+
+print(model.coef_.shape)   
+print( most_negative)
+print(most_positive)
+
+words_neg, weights_neg = zip(*most_negative)
+words_pos, weights_pos = zip(*most_positive )
+
+#most negative 
+plt.figure(figsize=(8, 6))
+plt.barh(words_neg, weights_neg, color='red')
+plt.xlabel("Coefficient Weight")
+plt.title("Top 15 Most Negative Words")
+plt.tight_layout()
+plt.show()
+
+#most positive
+plt.figure(figsize=(8, 6))
+plt.barh(words_pos, weights_pos, color='green')
+plt.xlabel("Coefficient Weight")
+plt.title("Top 15 Most Positive Words")
+plt.tight_layout()
+plt.show()
+
+
