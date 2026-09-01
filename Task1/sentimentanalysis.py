@@ -3,6 +3,7 @@ import nltk
 import sklearn
 import re
 from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
 from nltk.stem import   PorterStemmer
 from nltk.tokenize import sent_tokenize
 from nltk.tokenize import word_tokenize
@@ -92,3 +93,14 @@ model.fit(X_train_vec, y_train)
 
 # 3. Use it to predict on the test data
 y_pred = model.predict(X_test_vec)
+
+#Evaluation 
+# 1. Calculate overall accuracy
+accuracyscore = accuracy_score(y_test, y_pred)
+print(accuracyscore)
+
+classifi_report = classification_report(y_test, y_pred)
+print(classifi_report)
+
+confuse_matrix = confusion_matrix(y_test, y_pred)
+print(confuse_matrix)
