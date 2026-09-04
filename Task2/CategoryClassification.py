@@ -12,6 +12,7 @@ from nltk.stem.wordnet import WordNetLemmatizer
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
+import seaborn as sns
 import numpy as np
 
 
@@ -65,5 +66,32 @@ print("Sample vocabulary words:", list(Vectorizer.vocabulary_.keys())[:20])
 print("Vocabulary size:", len(Vectorizer.vocabulary_))
 print("-----------------------------")
 
+#MultiClass Classifier Model
+model = LogisticRegression(max_iter = 1000)
+model.fit(X_train_vec, y_train)
+y_pred = model.predict(X_test_vec)
 
+#Evaluation 
+print("---------------------------------------")
+accuracyscore = accuracy_score(y_test, y_pred)
+print(accuracyscore)
+print("---------------------------------------")
+classifi_report = classification_report(y_test, y_pred)
+print(classifi_report)
+print("---------------------------------------")
+confuse_matrix = confusion_matrix(y_test, y_pred)
+print(confuse_matrix)
+print("---------------------------------------")
 
+#Visualization 
+cm = confusion_matrix(y_test, y_pred)
+categories = sorted(df['category'].unique())  # or however you get your label list
+
+plt.figure(figsize=(10, 8))
+sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', 
+            xticklabels=categories, yticklabels=categories)
+plt.xlabel("Predicted")
+plt.ylabel("Actual")
+plt.title("Confusion Matrix")
+plt.tight_layout()
+plt.show()
