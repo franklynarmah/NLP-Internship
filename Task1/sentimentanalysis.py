@@ -85,7 +85,6 @@ print("Vocabulary size:", len(Vectorizer.vocabulary_))
 
 
 #the model
-from sklearn.linear_model import LogisticRegression
 
 # 1. Create the model
 model = LogisticRegression(max_iter = 1000)
